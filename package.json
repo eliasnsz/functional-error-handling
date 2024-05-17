@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "tsx": "^4.10.4",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "vitest": "^1.6.0"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}
