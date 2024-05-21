@@ -11,10 +11,14 @@ describe("Create User Use-Case", async () => {
 			email: "johndoe@example.com",
 		};
 
-		const { user } = await sut.execute(data);
+		const result = await sut.execute(data);
 
-		expect(user).toMatchObject(data);
-		expect(usersRepository.users.length).toStrictEqual(1);
+		expect(result.isRight()).toBe(true);
+
+		if (result.isRight()) {
+			expect(result.value.user).toMatchObject(data);
+			expect(usersRepository.users.length).toStrictEqual(1);
+		}
 	});
 
 	it("Should not be able to create an user with existent email", async () => {
@@ -23,7 +27,13 @@ describe("Create User Use-Case", async () => {
 			email: "johndoe@example.com", // email existente
 		};
 
-		await expect(sut.execute(data)).rejects.toBeInstanceOf(Error);
-		expect(usersRepository.users.length).toStrictEqual(1);
+		const result = await sut.execute(data);
+
+		expect(result.isRight()).toBe(false);
+
+		if (result.isLeft()) {
+			expect(result.reason.message).toBe("This email is already in use.");
+			expect(usersRepository.users.length).toStrictEqual(1);
+		}
 	});
 });

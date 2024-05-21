@@ -1,13 +1,13 @@
 import type { User } from "../entities/user";
+import { failure, success, type Either } from "../errors/either";
 import type { UsersRepository } from "../repositories/users-repository";
 
 interface CreateUserRequest {
 	name: string;
 	email: string;
 }
-interface CreateUserResponse {
-	user: User;
-}
+
+type CreateUserResponse = Either<{ message: string }, { user: User }>;
 
 export class CreateUserUseCase {
 	constructor(private usersRepository: UsersRepository) {}
@@ -19,11 +19,13 @@ export class CreateUserUseCase {
 		const emailIsAlreadyInUse = await this.usersRepository.findByEmail(email);
 
 		if (emailIsAlreadyInUse) {
-			throw new Error("This email is already in use");
+			return failure({ message: "This email is already in use." });
 		}
 
 		const user = await this.usersRepository.create({ email, name });
 
-		return { user };
+		return success({
+			user,
+		});
 	}
 }
